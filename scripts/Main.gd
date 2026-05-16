@@ -1,4 +1,4 @@
-extends Node2D
+﻿extends Node2D
 
 const AssetPaths = preload("res://scripts/AssetPaths.gd")
 const AudioManagerScript = preload("res://scripts/AudioManager.gd")
@@ -61,7 +61,7 @@ var online_lobby: OnlineLobbyController = null
 var online_player_name: String = "Player"
 var online_selected_role: String = ""
 var online_ready: bool = false
-var network_server_url: String = "ws://localhost:8080"
+var network_server_url: String = "wss://twin-core-blasters-1-0.onrender.com"
 var network_send_interval: float = 1.0 / 30.0
 var network_send_accumulator: float = 0.0
 var network_debug_room_id: String = "TEST"
@@ -83,9 +83,7 @@ var network_input_receive_count: int = 0
 var network_last_remote_player_id: int = 0
 var network_last_remote_input_text: String = ""
 
-# Step 13: オンラインゲーム開始後の状態管理です。
-# Start Gameを受け取ったら true にし、ロビーを閉じてゲーム画面へ移行します。
-var online_game_active: bool = false
+# Step 13: 繧ｪ繝ｳ繝ｩ繧､繝ｳ繧ｲ繝ｼ繝髢句ｧ句ｾ後・迥ｶ諷狗ｮ｡逅・〒縺吶・# Start Game繧貞女縺大叙縺｣縺溘ｉ true 縺ｫ縺励√Ο繝薙・繧帝哩縺倥※繧ｲ繝ｼ繝逕ｻ髱｢縺ｸ遘ｻ陦後＠縺ｾ縺吶・var online_game_active: bool = false
 var online_game_stage: String = "story"
 var online_game_started_by_server: bool = false
 
@@ -230,9 +228,7 @@ var link_fill: Sprite2D
 var boss_hp_back: Sprite2D
 var boss_hp_fill: ColorRect
 
-# Step 13: オンラインプレイ中だけ表示する小さなステータスHUDです。
-# ロビーUIとは別のCanvasLayerにして、ゲーム画面の上に固定表示します。
-var online_status_layer: CanvasLayer
+# Step 13: 繧ｪ繝ｳ繝ｩ繧､繝ｳ繝励Ξ繧､荳ｭ縺縺題｡ｨ遉ｺ縺吶ｋ蟆上＆縺ｪ繧ｹ繝・・繧ｿ繧ｹHUD縺ｧ縺吶・# 繝ｭ繝薙・UI縺ｨ縺ｯ蛻･縺ｮCanvasLayer縺ｫ縺励※縲√ご繝ｼ繝逕ｻ髱｢縺ｮ荳翫↓蝗ｺ螳夊｡ｨ遉ｺ縺励∪縺吶・var online_status_layer: CanvasLayer
 var online_status_panel: ColorRect
 var online_status_label: Label
 var online_return_button: Button
@@ -275,8 +271,7 @@ func _unhandled_input(event: InputEvent) -> void:
 				_network_join_room()
 				get_viewport().set_input_as_handled()
 			elif key_event.keycode == KEY_ESCAPE and online_game_active:
-				# Step 13: オンラインゲーム中にESCでロビーへ戻るための非常口です。
-				_return_to_online_lobby()
+				# Step 13: 繧ｪ繝ｳ繝ｩ繧､繝ｳ繧ｲ繝ｼ繝荳ｭ縺ｫESC縺ｧ繝ｭ繝薙・縺ｸ謌ｻ繧九◆繧√・髱槫ｸｸ蜿｣縺ｧ縺吶・				_return_to_online_lobby()
 				get_viewport().set_input_as_handled()
 
 func _ready() -> void:
@@ -446,10 +441,7 @@ func _is_player_bombing(player_id: int) -> bool:
 
 func _is_any_online_action_pressed() -> bool:
 	# Step 14:
-	# オンライン時は各PCで「矢印キー + Space」だけを使います。
-	# そのため、G/K/L/F のようなローカル2人用キーだけに頼らず、
-	# InputRouterから取得したP1/P2入力でもイベントを発火できるようにします。
-	if not online_input_mode:
+	# 繧ｪ繝ｳ繝ｩ繧､繝ｳ譎ゅ・蜷ПC縺ｧ縲檎泙蜊ｰ繧ｭ繝ｼ + Space縲阪□縺代ｒ菴ｿ縺・∪縺吶・	# 縺昴・縺溘ａ縲；/K/L/F 縺ｮ繧医≧縺ｪ繝ｭ繝ｼ繧ｫ繝ｫ2莠ｺ逕ｨ繧ｭ繝ｼ縺縺代↓鬆ｼ繧峨★縲・	# InputRouter縺九ｉ蜿門ｾ励＠縺蘖1/P2蜈･蜉帙〒繧ゅう繝吶Φ繝医ｒ逋ｺ轣ｫ縺ｧ縺阪ｋ繧医≧縺ｫ縺励∪縺吶・	if not online_input_mode:
 		return false
 	return _is_player_shooting(1) or _is_player_shooting(2) or _is_player_bombing(1) or _is_player_bombing(2)
 
@@ -659,30 +651,23 @@ func _on_network_peer_left(player_id: int) -> void:
 
 func _on_network_room_state_received(room_state: Dictionary) -> void:
 	# Step 9-12:
-	# サーバーから届いた部屋の状態をロビーUIへ反映します。
-	# 例：P1/P2の名前、Ready状態、Start可能状態など。
-	if online_lobby != null:
+	# 繧ｵ繝ｼ繝舌・縺九ｉ螻翫＞縺滄Κ螻九・迥ｶ諷九ｒ繝ｭ繝薙・UI縺ｸ蜿肴丐縺励∪縺吶・	# 萓具ｼ啀1/P2縺ｮ蜷榊燕縲ヽeady迥ｶ諷九ヾtart蜿ｯ閭ｽ迥ｶ諷九↑縺ｩ縲・	if online_lobby != null:
 		online_lobby.apply_room_state(room_state)
 
 
 func _on_network_game_start_received(stage_name: String) -> void:
 	# Step 13:
-	# サーバーからstart_gameが届いたら、ロビーを閉じてオンラインゲーム画面へ移行します。
-	# 実際にどのステージを読み込むかは _start_online_game() にまとめています。
-	print("[Network] Game start: " + stage_name)
+	# 繧ｵ繝ｼ繝舌・縺九ｉstart_game縺悟ｱ翫＞縺溘ｉ縲√Ο繝薙・繧帝哩縺倥※繧ｪ繝ｳ繝ｩ繧､繝ｳ繧ｲ繝ｼ繝逕ｻ髱｢縺ｸ遘ｻ陦後＠縺ｾ縺吶・	# 螳滄圀縺ｫ縺ｩ縺ｮ繧ｹ繝・・繧ｸ繧定ｪｭ縺ｿ霎ｼ繧縺九・ _start_online_game() 縺ｫ縺ｾ縺ｨ繧√※縺・∪縺吶・	print("[Network] Game start: " + stage_name)
 	_start_online_game(stage_name)
 
 
 func _start_online_game(stage_name: String) -> void:
 	# Step 13:
-	# オンラインプレイ開始時の共通処理です。
-	# ここでUIを整理してから、指定されたステージを読み込みます。
-	online_game_active = true
+	# 繧ｪ繝ｳ繝ｩ繧､繝ｳ繝励Ξ繧､髢句ｧ区凾縺ｮ蜈ｱ騾壼・逅・〒縺吶・	# 縺薙％縺ｧUI繧呈紛逅・＠縺ｦ縺九ｉ縲∵欠螳壹＆繧後◆繧ｹ繝・・繧ｸ繧定ｪｭ縺ｿ霎ｼ縺ｿ縺ｾ縺吶・	online_game_active = true
 	online_game_stage = stage_name
 	online_game_started_by_server = true
 
-	# ロビー・タイトル・説明画面はゲームプレイ中に操作を邪魔しないよう非表示にします。
-	if online_lobby != null:
+	# 繝ｭ繝薙・繝ｻ繧ｿ繧､繝医Ν繝ｻ隱ｬ譏守判髱｢縺ｯ繧ｲ繝ｼ繝繝励Ξ繧､荳ｭ縺ｫ謫堺ｽ懊ｒ驍ｪ鬲斐＠縺ｪ縺・ｈ縺・撼陦ｨ遉ｺ縺ｫ縺励∪縺吶・	if online_lobby != null:
 		online_lobby.close_lobby()
 	if title_layer != null:
 		title_layer.visible = false
@@ -693,8 +678,7 @@ func _start_online_game(stage_name: String) -> void:
 	instruction_visible = false
 	game_over = false
 
-	# サーバーからP1/P2を割り当て済みなら、その役割をInputRouterへ固定します。
-	set_online_input_mode(true, online_local_player_id)
+	# 繧ｵ繝ｼ繝舌・縺九ｉP1/P2繧貞牡繧雁ｽ薙※貂医∩縺ｪ繧峨√◎縺ｮ蠖ｹ蜑ｲ繧棚nputRouter縺ｸ蝗ｺ螳壹＠縺ｾ縺吶・	set_online_input_mode(true, online_local_player_id)
 	_show_online_status_hud(true)
 
 	match stage_name:
@@ -710,9 +694,7 @@ func _start_online_game(stage_name: String) -> void:
 
 func _return_to_online_lobby() -> void:
 	# Step 13:
-	# オンラインゲーム中からロビーへ戻る処理です。
-	# ネットワーク接続は維持したまま、再度ReadyやStartを試せるようにします。
-	online_game_active = false
+	# 繧ｪ繝ｳ繝ｩ繧､繝ｳ繧ｲ繝ｼ繝荳ｭ縺九ｉ繝ｭ繝薙・縺ｸ謌ｻ繧句・逅・〒縺吶・	# 繝阪ャ繝医Ρ繝ｼ繧ｯ謗･邯壹・邯ｭ謖√＠縺溘∪縺ｾ縲∝・蠎ｦReady繧Тtart繧定ｩｦ縺帙ｋ繧医≧縺ｫ縺励∪縺吶・	online_game_active = false
 	_show_online_status_hud(false)
 	_clear_game_objects()
 	_show_title()
@@ -944,9 +926,7 @@ func _setup_title_buttons() -> void:
 	title_layer.add_child(raid_button)
 	title_buttons.append(raid_button)
 
-	# Step 9-12: 本番向けオンラインロビーを開くボタンです。
-	# 既存のF10/F11/F7デバッグ操作は残したまま、ユーザー向けUIを追加します。
-	var online_button := _create_premium_button("ONLINE LOBBY", Vector2(screen_size.x * 0.5 - 230.0, y + 112.0), Vector2(460.0, button_height))
+	# Step 9-12: 譛ｬ逡ｪ蜷代￠繧ｪ繝ｳ繝ｩ繧､繝ｳ繝ｭ繝薙・繧帝幕縺上・繧ｿ繝ｳ縺ｧ縺吶・	# 譌｢蟄倥・F10/F11/F7繝・ヰ繝・げ謫堺ｽ懊・谿九＠縺溘∪縺ｾ縲√Θ繝ｼ繧ｶ繝ｼ蜷代￠UI繧定ｿｽ蜉縺励∪縺吶・	var online_button := _create_premium_button("ONLINE LOBBY", Vector2(screen_size.x * 0.5 - 230.0, y + 112.0), Vector2(460.0, button_height))
 	online_button.pressed.connect(_on_online_button_pressed)
 	title_layer.add_child(online_button)
 	title_buttons.append(online_button)
@@ -1012,16 +992,11 @@ func _setup_result_buttons() -> void:
 
 func _setup_online_lobby_ui() -> void:
 	# Step 9-12:
-	# オンライン用のロビーUIをMainの上に重ねます。
-	# ここではUIノードを直接Mainに作らず、専用Controllerに任せます。
-	online_lobby = OnlineLobbyControllerScript.new()
-	# Online Lobby はタイトル画面より前面に出す必要があります。
-	# title_layer.layer = 20 なので、十分大きい値にします。
-	online_lobby.layer = 80
+	# 繧ｪ繝ｳ繝ｩ繧､繝ｳ逕ｨ縺ｮ繝ｭ繝薙・UI繧樽ain縺ｮ荳翫↓驥阪・縺ｾ縺吶・	# 縺薙％縺ｧ縺ｯUI繝弱・繝峨ｒ逶ｴ謗･Main縺ｫ菴懊ｉ縺壹∝ｰら畑Controller縺ｫ莉ｻ縺帙∪縺吶・	online_lobby = OnlineLobbyControllerScript.new()
+	# Online Lobby 縺ｯ繧ｿ繧､繝医Ν逕ｻ髱｢繧医ｊ蜑埼擇縺ｫ蜃ｺ縺吝ｿ・ｦ√′縺ゅｊ縺ｾ縺吶・	# title_layer.layer = 20 縺ｪ縺ｮ縺ｧ縲∝香蛻・､ｧ縺阪＞蛟､縺ｫ縺励∪縺吶・	online_lobby.layer = 80
 	add_child(online_lobby)
 
-	# UIから来た操作要求を、Main側のNetworkClientに橋渡しします。
-	online_lobby.connect_requested.connect(_on_online_lobby_connect_requested)
+	# UI縺九ｉ譚･縺滓桃菴懆ｦ∵ｱゅｒ縲｀ain蛛ｴ縺ｮNetworkClient縺ｫ讖区ｸ｡縺励＠縺ｾ縺吶・	online_lobby.connect_requested.connect(_on_online_lobby_connect_requested)
 	online_lobby.create_room_requested.connect(_on_online_lobby_create_room_requested)
 	online_lobby.join_room_requested.connect(_on_online_lobby_join_room_requested)
 	online_lobby.role_selected.connect(_on_online_lobby_role_selected)
@@ -1032,8 +1007,7 @@ func _setup_online_lobby_ui() -> void:
 
 func _setup_online_status_hud() -> void:
 	# Step 13:
-	# オンラインゲーム中に、接続状態・部屋番号・自分の役割を常に確認できるHUDです。
-	online_status_layer = CanvasLayer.new()
+	# 繧ｪ繝ｳ繝ｩ繧､繝ｳ繧ｲ繝ｼ繝荳ｭ縺ｫ縲∵磁邯夂憾諷九・驛ｨ螻狗分蜿ｷ繝ｻ閾ｪ蛻・・蠖ｹ蜑ｲ繧貞ｸｸ縺ｫ遒ｺ隱阪〒縺阪ｋHUD縺ｧ縺吶・	online_status_layer = CanvasLayer.new()
 	online_status_layer.layer = 70
 	online_status_layer.visible = false
 	add_child(online_status_layer)
@@ -1060,15 +1034,13 @@ func _setup_online_status_hud() -> void:
 
 func _show_online_status_hud(enabled: bool) -> void:
 	# Step 13:
-	# ゲーム中だけHUDを表示します。タイトルやロビーでは非表示です。
-	if online_status_layer != null:
+	# 繧ｲ繝ｼ繝荳ｭ縺縺践UD繧定｡ｨ遉ｺ縺励∪縺吶ゅち繧､繝医Ν繧・Ο繝薙・縺ｧ縺ｯ髱櫁｡ｨ遉ｺ縺ｧ縺吶・	if online_status_layer != null:
 		online_status_layer.visible = enabled
 
 
 func _update_online_status_hud() -> void:
 	# Step 13:
-	# 毎フレーム、オンライン状態をHUDへ反映します。
-	if online_status_layer == null or not online_status_layer.visible:
+	# 豈弱ヵ繝ｬ繝ｼ繝縲√が繝ｳ繝ｩ繧､繝ｳ迥ｶ諷九ｒHUD縺ｸ蜿肴丐縺励∪縺吶・	if online_status_layer == null or not online_status_layer.visible:
 		return
 	var room_text := network_join_room_code if network_join_room_code != "" else "-"
 	var local_text := "P%d" % online_local_player_id if online_input_mode else "-"
@@ -1083,19 +1055,16 @@ func _update_online_status_hud() -> void:
 
 
 func _on_online_button_pressed() -> void:
-	# タイトル画面からオンラインロビーを開きます。
-	_show_online_lobby()
+	# 繧ｿ繧､繝医Ν逕ｻ髱｢縺九ｉ繧ｪ繝ｳ繝ｩ繧､繝ｳ繝ｭ繝薙・繧帝幕縺阪∪縺吶・	_show_online_lobby()
 
 
 func _show_online_lobby() -> void:
 	if online_lobby == null:
 		return
-	# Step 13: ロビーを開くときは、ゲーム中HUDを隠します。
-	_show_online_status_hud(false)
+	# Step 13: 繝ｭ繝薙・繧帝幕縺上→縺阪・縲√ご繝ｼ繝荳ｭHUD繧帝國縺励∪縺吶・	_show_online_status_hud(false)
 
-	# タイトル画面を表示したままだと、Online Lobby が後ろに隠れて
-	# LineEdit や Button を操作できなくなるため、ロビー表示中は隠します。
-	if title_layer != null:
+	# 繧ｿ繧､繝医Ν逕ｻ髱｢繧定｡ｨ遉ｺ縺励◆縺ｾ縺ｾ縺縺ｨ縲＾nline Lobby 縺悟ｾ後ｍ縺ｫ髫繧後※
+	# LineEdit 繧・Button 繧呈桃菴懊〒縺阪↑縺上↑繧九◆繧√√Ο繝薙・陦ｨ遉ｺ荳ｭ縺ｯ髫縺励∪縺吶・	if title_layer != null:
 		title_layer.visible = false
 	if instruction_layer != null:
 		instruction_layer.visible = false
@@ -1113,16 +1082,12 @@ func _on_online_lobby_close_requested() -> void:
 	if online_lobby != null:
 		online_lobby.close_lobby()
 
-	# ロビーを閉じたらタイトル画面へ戻します。
-	# ゲーム中に呼ばれた場合は、タイトルを勝手に出さないようにします。
-	if mode == GameMode.TITLE and title_layer != null:
+	# 繝ｭ繝薙・繧帝哩縺倥◆繧峨ち繧､繝医Ν逕ｻ髱｢縺ｸ謌ｻ縺励∪縺吶・	# 繧ｲ繝ｼ繝荳ｭ縺ｫ蜻ｼ縺ｰ繧後◆蝣ｴ蜷医・縲√ち繧､繝医Ν繧貞享謇九↓蜃ｺ縺輔↑縺・ｈ縺・↓縺励∪縺吶・	if mode == GameMode.TITLE and title_layer != null:
 		title_layer.visible = true
 
 
 func _on_online_lobby_connect_requested(player_name: String) -> void:
-	# ユーザー名を保存してからサーバーへ接続します。
-	# 接続済みなら名前だけ再送信します。
-	online_player_name = player_name.strip_edges()
+	# 繝ｦ繝ｼ繧ｶ繝ｼ蜷阪ｒ菫晏ｭ倥＠縺ｦ縺九ｉ繧ｵ繝ｼ繝舌・縺ｸ謗･邯壹＠縺ｾ縺吶・	# 謗･邯壽ｸ医∩縺ｪ繧牙錐蜑阪□縺大・騾∽ｿ｡縺励∪縺吶・	online_player_name = player_name.strip_edges()
 	if online_player_name == "":
 		online_player_name = "Player"
 	if network_client == null:
@@ -1137,9 +1102,7 @@ func _on_online_lobby_connect_requested(player_name: String) -> void:
 
 
 func _on_online_lobby_create_room_requested(player_name: String) -> void:
-	# ルーム作成ボタンから呼ばれます。
-	# 本番UIでは、F11の代わりにこの関数を使います。
-	online_player_name = player_name.strip_edges()
+	# 繝ｫ繝ｼ繝菴懈・繝懊ち繝ｳ縺九ｉ蜻ｼ縺ｰ繧後∪縺吶・	# 譛ｬ逡ｪUI縺ｧ縺ｯ縲：11縺ｮ莉｣繧上ｊ縺ｫ縺薙・髢｢謨ｰ繧剃ｽｿ縺・∪縺吶・	online_player_name = player_name.strip_edges()
 	if online_player_name == "":
 		online_player_name = "Player"
 	if network_client == null or not network_client.is_connected_to_server():
@@ -1153,9 +1116,7 @@ func _on_online_lobby_create_room_requested(player_name: String) -> void:
 
 
 func _on_online_lobby_join_room_requested(player_name: String, room_code: String) -> void:
-	# Joinボタンから呼ばれます。
-	# ルームコードは大文字に統一して送信します。
-	online_player_name = player_name.strip_edges()
+	# Join繝懊ち繝ｳ縺九ｉ蜻ｼ縺ｰ繧後∪縺吶・	# 繝ｫ繝ｼ繝繧ｳ繝ｼ繝峨・螟ｧ譁・ｭ励↓邨ｱ荳縺励※騾∽ｿ｡縺励∪縺吶・	online_player_name = player_name.strip_edges()
 	if online_player_name == "":
 		online_player_name = "Player"
 	var code := room_code.strip_edges().to_upper()
@@ -1175,9 +1136,7 @@ func _on_online_lobby_join_room_requested(player_name: String, room_code: String
 
 
 func _on_online_lobby_role_selected(role: String) -> void:
-	# P1 / P2の画像カードをクリックしたときの処理です。
-	# サーバー側で空き状況を確認し、room_stateで全員へ反映します。
-	online_selected_role = role
+	# P1 / P2縺ｮ逕ｻ蜒上き繝ｼ繝峨ｒ繧ｯ繝ｪ繝・け縺励◆縺ｨ縺阪・蜃ｦ逅・〒縺吶・	# 繧ｵ繝ｼ繝舌・蛛ｴ縺ｧ遨ｺ縺咲憾豕√ｒ遒ｺ隱阪＠縲〉oom_state縺ｧ蜈ｨ蜩｡縺ｸ蜿肴丐縺励∪縺吶・	online_selected_role = role
 	if network_client != null and network_client.is_connected_to_server():
 		network_client.select_role(role)
 	if online_lobby != null:
@@ -1185,8 +1144,7 @@ func _on_online_lobby_role_selected(role: String) -> void:
 
 
 func _on_online_lobby_ready_requested(ready: bool) -> void:
-	# Waiting RoomのREADYボタンです。
-	online_ready = ready
+	# Waiting Room縺ｮREADY繝懊ち繝ｳ縺ｧ縺吶・	online_ready = ready
 	if network_client != null and network_client.is_connected_to_server():
 		network_client.set_ready(ready)
 	if online_lobby != null:
@@ -1194,9 +1152,7 @@ func _on_online_lobby_ready_requested(ready: bool) -> void:
 
 
 func _on_online_lobby_start_game_requested() -> void:
-	# ホストがStart Gameを押したときに呼ばれます。
-	# サーバーからgame_startが返ると、全クライアントが同じステージへ進みます。
-	if network_client != null and network_client.is_connected_to_server():
+	# 繝帙せ繝医′Start Game繧呈款縺励◆縺ｨ縺阪↓蜻ｼ縺ｰ繧後∪縺吶・	# 繧ｵ繝ｼ繝舌・縺九ｉgame_start縺瑚ｿ斐ｋ縺ｨ縲∝・繧ｯ繝ｩ繧､繧｢繝ｳ繝医′蜷後§繧ｹ繝・・繧ｸ縺ｸ騾ｲ縺ｿ縺ｾ縺吶・	if network_client != null and network_client.is_connected_to_server():
 		network_client.start_game("story")
 	if online_lobby != null:
 		online_lobby.set_status_message("Requesting game start...")
@@ -1277,8 +1233,7 @@ func _on_result_retry_pressed() -> void:
 
 func _show_title() -> void:
 	mode = GameMode.TITLE
-	# Step 13: タイトルに戻るときは、オンラインゲーム中HUDを非表示にします。
-	_show_online_status_hud(false)
+	# Step 13: 繧ｿ繧､繝医Ν縺ｫ謌ｻ繧九→縺阪・縲√が繝ｳ繝ｩ繧､繝ｳ繧ｲ繝ｼ繝荳ｭHUD繧帝撼陦ｨ遉ｺ縺ｫ縺励∪縺吶・	_show_online_status_hud(false)
 	title_layer.visible = true
 	if instruction_layer != null:
 		instruction_layer.visible = false
@@ -1783,10 +1738,7 @@ func _update_story(delta: float) -> void:
 			coop_link = clampf(coop_link - 5.0 * delta, 0.0, 100.0)
 
 		# Step C / Step 14:
-		# ローカル2人プレイでは G / K / Space で合体できます。
-		# オンライン時は各PCの Space 入力がInputRouter経由で届くため、
-		# _is_any_online_action_pressed() も合体トリガーに含めます。
-		var fusion_trigger_pressed := (
+		# 繝ｭ繝ｼ繧ｫ繝ｫ2莠ｺ繝励Ξ繧､縺ｧ縺ｯ G / K / Space 縺ｧ蜷井ｽ薙〒縺阪∪縺吶・		# 繧ｪ繝ｳ繝ｩ繧､繝ｳ譎ゅ・蜷ПC縺ｮ Space 蜈･蜉帙′InputRouter邨檎罰縺ｧ螻翫￥縺溘ａ縲・		# _is_any_online_action_pressed() 繧ょ粋菴薙ヨ繝ｪ繧ｬ繝ｼ縺ｫ蜷ｫ繧√∪縺吶・		var fusion_trigger_pressed := (
 			Input.is_key_pressed(KEY_G)
 			or Input.is_key_pressed(KEY_K)
 			or Input.is_key_pressed(KEY_SPACE)
@@ -2156,9 +2108,7 @@ func _apply_item(key: String, p: Dictionary) -> void:
 
 func _handle_arena_abilities(delta: float) -> void:
 	# Step 14:
-	# Astral Courtでも、オンライン時はP1/P2の入力をInputRouter経由で扱います。
-	# これにより、別PCから届いたSpace入力でもUltimateを発動できます。
-	var p1_input := _get_player_input(1)
+	# Astral Court縺ｧ繧ゅ√が繝ｳ繝ｩ繧､繝ｳ譎ゅ・P1/P2縺ｮ蜈･蜉帙ｒInputRouter邨檎罰縺ｧ謇ｱ縺・∪縺吶・	# 縺薙ｌ縺ｫ繧医ｊ縲∝挨PC縺九ｉ螻翫＞縺欖pace蜈･蜉帙〒繧６ltimate繧堤匱蜍輔〒縺阪∪縺吶・	var p1_input := _get_player_input(1)
 	var p2_input := _get_player_input(2)
 
 	arena_time -= delta
@@ -2249,9 +2199,7 @@ func _update_raid(delta: float) -> void:
 	else:
 		raid_link = clampf(raid_link - 4.0 * delta, 0.0, 100.0)
 	# Step 14:
-	# レイドのTwin Core Cannonもオンライン入力に対応します。
-	# ローカルでは従来どおりG/K、オンラインでは各PCのSpace入力でも発動します。
-	var raid_cannon_trigger := Input.is_key_pressed(KEY_G) or Input.is_key_pressed(KEY_K) or _is_any_online_action_pressed()
+	# 繝ｬ繧､繝峨・Twin Core Cannon繧ゅが繝ｳ繝ｩ繧､繝ｳ蜈･蜉帙↓蟇ｾ蠢懊＠縺ｾ縺吶・	# 繝ｭ繝ｼ繧ｫ繝ｫ縺ｧ縺ｯ蠕捺擂縺ｩ縺翫ｊG/K縲√が繝ｳ繝ｩ繧､繝ｳ縺ｧ縺ｯ蜷ПC縺ｮSpace蜈･蜉帙〒繧ら匱蜍輔＠縺ｾ縺吶・	var raid_cannon_trigger := Input.is_key_pressed(KEY_G) or Input.is_key_pressed(KEY_K) or _is_any_online_action_pressed()
 	if raid_link >= 100.0 and raid_cannon_trigger:
 		if audio_manager != null:
 			audio_manager.play_sfx("twin_core_cannon", -3.0)
